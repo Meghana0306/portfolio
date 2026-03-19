@@ -76,7 +76,7 @@ const About = () => {
             </motion.div>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid auto-rows-max content-start self-start gap-4 sm:grid-cols-2">
             {infoCards.map((card, index) => (
               <motion.article
                 key={card.label}
@@ -85,16 +85,16 @@ const About = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 + index * 0.08 }}
                 whileHover={{ y: -6 }}
-                className="rounded-3xl border border-slate-700/60 bg-slate-900/70 p-5 backdrop-blur-lg"
+                className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-4 backdrop-blur-lg"
               >
-                <div className="mb-4 flex gap-2">
-                  <span className="h-3 w-3 rounded-full bg-red-400" />
-                  <span className="h-3 w-3 rounded-full bg-yellow-400" />
-                  <span className="h-3 w-3 rounded-full bg-green-400" />
+                <div className="mb-3 flex gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
                 </div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-400">{card.label}</p>
-                <p className="mt-4 text-lg font-semibold leading-7 text-white md:text-xl">{card.line1}</p>
-                <p className="mt-1 text-lg font-semibold leading-7 text-slate-200 md:text-xl">{card.line2}</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-400">{card.label}</p>
+                <p className="mt-3 text-base font-semibold leading-6 text-white md:text-lg">{card.line1}</p>
+                <p className="mt-1 text-base font-semibold leading-6 text-slate-200 md:text-lg">{card.line2}</p>
               </motion.article>
             ))}
           </div>

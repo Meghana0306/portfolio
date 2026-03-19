@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Element } from "react-scroll";
 import { FaGithub, FaLinkedin, FaCode, FaHackerrank, FaLaptopCode, FaPython, FaJava, FaCss3Alt } from "react-icons/fa";
@@ -34,10 +34,60 @@ const orbitIcons = [
   { Icon: SiMongodb, label: "MERN Stack", size: 630, duration: 27, direction: 360, tone: "text-emerald-300" },
   { Icon: SiCplusplus, label: "C++", size: 610, duration: 25, direction: -360, tone: "text-blue-300" },
 ];
-const ringHoverVariants = {
-  initial: { y: 0, scale: 1, boxShadow: "0 0 0 rgba(34, 211, 238, 0)" },
-  hover: { y: 10, scale: 1.06, boxShadow: "0 0 24px rgba(34, 211, 238, 0.45)" },
-};
+
+const OrbitAvatar = memo(() => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.7 }}
+    className="relative mx-auto flex w-full max-w-md items-center justify-center py-8"
+  >
+    {orbitRings.map((ring) => (
+      <div key={ring.size} className={`absolute ${ring.size} transform-gpu`}>
+        <motion.div
+          className={`h-full w-full rounded-full border ${ring.border}`}
+          animate={{ rotate: ring.direction }}
+          transition={{ duration: ring.duration, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+          style={{ willChange: "transform" }}
+        />
+      </div>
+    ))}
+    <div className="absolute h-[415px] w-[415px] transform-gpu">
+      <motion.div
+        className="h-full w-full rounded-full border border-dashed border-cyan-300/30"
+        animate={{ rotate: -360 }}
+        transition={{ duration: 18, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+        style={{ willChange: "transform" }}
+      />
+    </div>
+    {orbitIcons.map((item, index) => (
+      <motion.div
+        key={`${item.size}-${index}`}
+        className="absolute rounded-full border border-dashed border-brand-400/20 transform-gpu"
+        style={{ width: item.size, height: item.size, willChange: "transform" }}
+        animate={{ rotate: item.direction }}
+        transition={{ duration: item.duration, repeat: Infinity, repeatType: "loop", ease: "linear" }}
+      >
+        <div className="group absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-brand-400/40 bg-slate-950/85 p-2 shadow-glow">
+          <item.Icon className={`text-lg ${item.tone}`} />
+          <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-brand-400/30 bg-slate-950/95 px-2 py-1 text-[10px] font-semibold text-brand-200 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            {item.label}
+          </span>
+        </div>
+      </motion.div>
+    ))}
+    <div className="absolute -right-12 -top-8 h-28 w-28 rounded-full bg-brand-500/25 blur-2xl" />
+    <div className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-cyan-400/25 blur-2xl" />
+    <img
+      src={heroPhoto}
+      alt="Meghana profile"
+      className="relative z-10 h-[320px] w-[320px] rounded-full border-2 border-brand-400/60 object-cover object-top shadow-glow"
+    />
+  </motion.div>
+));
+
+OrbitAvatar.displayName = "OrbitAvatar";
 
 const Hero = () => {
   const [skillIndex, setSkillIndex] = useState(0);
@@ -132,64 +182,7 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            whileHover="hover"
-            animate="initial"
-            className="relative mx-auto flex w-full max-w-md items-center justify-center py-8"
-          >
-            {orbitRings.map((ring) => (
-              <motion.div
-                key={ring.size}
-                className={`absolute ${ring.size}`}
-                variants={ringHoverVariants}
-                transition={{ y: { duration: 0.25 }, scale: { duration: 0.25 }, boxShadow: { duration: 0.25 } }}
-              >
-                <motion.div
-                  className={`h-full w-full rounded-full border ${ring.border}`}
-                  animate={{ rotate: ring.direction }}
-                  transition={{ duration: ring.duration, repeat: Infinity, ease: "linear" }}
-                />
-              </motion.div>
-            ))}
-            <motion.div
-              className="absolute h-[415px] w-[415px]"
-              variants={ringHoverVariants}
-              transition={{ y: { duration: 0.25 }, scale: { duration: 0.25 }, boxShadow: { duration: 0.25 } }}
-            >
-              <motion.div
-                className="h-full w-full rounded-full border border-dashed border-cyan-300/30"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-              />
-            </motion.div>
-            {orbitIcons.map((item, index) => (
-              <motion.div
-                key={`${item.size}-${index}`}
-                className="absolute rounded-full border border-dashed border-brand-400/20"
-                style={{ width: item.size, height: item.size }}
-                animate={{ rotate: item.direction }}
-                transition={{ duration: item.duration, repeat: Infinity, ease: "linear" }}
-              >
-                <div className="group absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-brand-400/40 bg-slate-950/85 p-2 shadow-glow">
-                  <item.Icon className={`text-lg ${item.tone}`} />
-                  <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-brand-400/30 bg-slate-950/95 px-2 py-1 text-[10px] font-semibold text-brand-200 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    {item.label}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-            <div className="absolute -right-12 -top-8 h-28 w-28 rounded-full bg-brand-500/25 blur-2xl" />
-            <div className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-cyan-400/25 blur-2xl" />
-            <img
-              src={heroPhoto}
-              alt="Meghana profile"
-              className="relative z-10 h-[320px] w-[320px] rounded-full border-2 border-brand-400/60 object-cover object-top shadow-glow"
-            />
-          </motion.div>
+          <OrbitAvatar />
         </div>
       </section>
     </Element>
