@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -25,6 +26,21 @@ const Home = () => (
 );
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
   return (
     <BrowserRouter>
       <div style={{ position: "relative", minHeight: "100vh", overflow: "hidden" }}>
@@ -32,7 +48,7 @@ function App() {
           <ChipBackground />
         </div>
         <div style={{ position: "relative", zIndex: 1 }} className="text-slate-100">
-          <Navbar />
+          <Navbar theme={theme} onToggleTheme={toggleTheme} />
           <main>
             <Routes>
               <Route path="/" element={<Home />} />

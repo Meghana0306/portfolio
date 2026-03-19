@@ -8,6 +8,10 @@
   color-scheme: dark;
 }
 
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
 html,
 body,
 #root {
@@ -19,6 +23,10 @@ body,
 body {
   position: relative;
   overflow-x: hidden;
+}
+
+:root[data-theme="light"] body {
+  background: #ffffff;
 }
 
 * {
@@ -54,4 +62,57 @@ body {
   height: 100%;
   display: block;
   z-index: 0;
+}
+
+:root[data-theme="light"] .chip-bg-wrap {
+  opacity: 0;
+}
+
+:root[data-theme="light"] [class*="bg-slate-9"] {
+  background-color: rgba(246, 250, 252, 0.84) !important;
+}
+
+:root[data-theme="light"] [class*="bg-slate-8"] {
+  background-color: rgba(240, 245, 248, 0.9) !important;
+}
+
+:root[data-theme="light"] [class*="border-slate-"] {
+  border-color: rgba(148, 163, 184, 0.45) !important;
+}
+
+:root[data-theme="light"] [class*="text-white"] {
+  color: #0f172a !important;
+}
+
+:root[data-theme="light"] [class*="text-slate-"] {
+  color: #334155 !important;
+}
+
+:root[data-theme="light"] .section-title {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .section-subtitle {
+  color: #475569;
+}
+
+:root[data-theme="light"] .card {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-color: rgba(148, 163, 184, 0.45);
+}
+
+:root[data-theme="light"] .text-slate-50,
+:root[data-theme="light"] .text-slate-100,
+:root[data-theme="light"] .text-slate-200,
+:root[data-theme="light"] .text-slate-300,
+:root[data-theme="light"] .text-slate-400 {
+  color: #334155 !important;
+}
+
+:root[data-theme="light"] .text-brand-200 {
+  color: #0e7490 !important;
+}
+
+:root[data-theme="light"] .text-brand-300 {
+  color: #0891b2 !important;
 }

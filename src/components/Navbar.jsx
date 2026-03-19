@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-scroll";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiMoon, FiSun, FiX } from "react-icons/fi";
 
 const navLinks = ["home", "about", "skills", "projects", "certificates", "achievements", "education", "contact"];
 
-const Navbar = () => {
+const Navbar = ({ theme, onToggleTheme }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -33,16 +33,36 @@ const Navbar = () => {
               {item}
             </Link>
           ))}
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            className="rounded-lg border border-slate-600 px-3 py-2 text-lg text-slate-200 transition hover:border-brand-400 hover:text-brand-400"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {theme === "dark" ? <FiSun /> : <FiMoon />}
+          </button>
         </div>
 
-        <button
-          type="button"
-          className="text-2xl text-slate-200 md:hidden"
-          onClick={() => setIsOpen((prev) => !prev)}
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <FiX /> : <FiMenu />}
-        </button>
+        <div className="flex items-center gap-3 md:hidden">
+          <button
+            type="button"
+            onClick={onToggleTheme}
+            className="rounded-lg border border-slate-600 p-2 text-lg text-slate-200 transition hover:border-brand-400 hover:text-brand-400"
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {theme === "dark" ? <FiSun /> : <FiMoon />}
+          </button>
+          <button
+            type="button"
+            className="text-2xl text-slate-200"
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <FiX /> : <FiMenu />}
+          </button>
+        </div>
       </nav>
 
       {isOpen && (
