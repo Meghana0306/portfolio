@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-scroll";
 import { FiMenu, FiMoon, FiSun, FiX } from "react-icons/fi";
@@ -7,13 +7,25 @@ const navLinks = ["home", "about", "skills", "projects", "certificates", "achiev
 
 const Navbar = ({ theme, onToggleTheme }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <motion.header
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed inset-x-0 top-0 z-50 border-b border-slate-800/70 bg-slate-950/90 backdrop-blur-xl"
+      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl transition-all duration-300 ${
+        isScrolled
+          ? "border-slate-700/80 bg-slate-950/95 shadow-lg shadow-slate-950/30"
+          : "border-slate-800/70 bg-slate-950/90"
+      }`}
     >
       <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
         <a href="/" className="font-display text-lg font-bold tracking-wide text-white">

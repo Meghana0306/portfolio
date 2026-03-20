@@ -43,13 +43,11 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div style={{ position: "relative", minHeight: "100vh", overflow: "hidden" }}>
-        <div className="chip-bg-wrap">
-          <ChipBackground />
-        </div>
+      <div style={{ position: "relative", minHeight: "100vh", overflowX: "hidden" }}>
+        <ChipBackground />
         <div style={{ position: "relative", zIndex: 1 }} className="text-slate-100">
           <Navbar theme={theme} onToggleTheme={toggleTheme} />
-          <main>
+          <main className="pt-20 md:pt-24">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
