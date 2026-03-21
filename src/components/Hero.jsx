@@ -41,12 +41,18 @@ const OrbitAvatar = memo(() => (
     whileInView={{ opacity: 1, scale: 1 }}
     viewport={{ once: true }}
     transition={{ duration: 0.7 }}
-    className="relative mx-auto flex w-full max-w-md items-center justify-center py-8"
+    whileHover={{ scale: 1.03 }}
+    className="group relative mx-auto flex w-full max-w-md items-center justify-center py-8 transition-transform duration-300"
   >
-    {orbitRings.map((ring) => (
-      <div key={ring.size} className={`absolute ${ring.size} transform-gpu`}>
+    {orbitRings.map((ring, index) => (
+      <div
+        key={ring.size}
+        className={`absolute ${ring.size} transform-gpu transition-all duration-300 ${
+          index % 2 === 0 ? "group-hover:scale-110" : "group-hover:scale-105"
+        }`}
+      >
         <motion.div
-          className={`h-full w-full rounded-full border ${ring.border}`}
+          className={`h-full w-full rounded-full border ${ring.border} transition-all duration-300 group-hover:border-brand-300/75 group-hover:shadow-[0_0_28px_rgba(56,189,248,0.35)]`}
           animate={{ rotate: ring.direction }}
           transition={{ duration: ring.duration, repeat: Infinity, repeatType: "loop", ease: "linear" }}
           style={{ willChange: "transform" }}
@@ -55,7 +61,7 @@ const OrbitAvatar = memo(() => (
     ))}
     <div className="absolute h-[415px] w-[415px] transform-gpu">
       <motion.div
-        className="h-full w-full rounded-full border border-dashed border-cyan-300/30"
+        className="h-full w-full rounded-full border border-dashed border-cyan-300/30 transition-all duration-300 group-hover:scale-105 group-hover:border-cyan-200/80 group-hover:shadow-[0_0_32px_rgba(34,211,238,0.35)]"
         animate={{ rotate: -360 }}
         transition={{ duration: 18, repeat: Infinity, repeatType: "loop", ease: "linear" }}
         style={{ willChange: "transform" }}
