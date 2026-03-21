@@ -5,100 +5,274 @@ const ChipBackground = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return undefined;
-
     const ctx = canvas.getContext("2d");
-    if (!ctx) return undefined;
-
-    let frameId = null;
-    const dpr = window.devicePixelRatio || 1;
-    const nodes = [];
-    const nodeCount = 45;
+    let animationId;
 
     const resize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
 
-    const initNodes = () => {
-      nodes.length = 0;
-      for (let i = 0; i < nodeCount; i += 1) {
-        nodes.push({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          r: 1 + Math.random() * 1.2,
-        });
+    const toBinary = (text) =>
+      text.split("").map(c => c.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
+
+    const WORDS = ["MEGHANA", "CSE", "AI", "01001101", "01000001"];
+    const BINARY_STREAMS = [
+      toBinary("MEGHANA"),
+      toBinary("CSE"),
+      toBinary("AI"),
+      "01001101 01000101 01000111 01001000 01000001 01001110 01000001",
+      "01000011 01010011 01000101",
+      "01000001 01001001",
+    ];
+
+    const GRID = 48;
+
+    class BitParticle {
+      constructor(W, H) {
+        this.W = W; this.H = H;
+        this.reset(true);
       }
-    };
-
-    const draw = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      ctx.clearRect(0, 0, width, height);
-
-      const gradient = ctx.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, "rgba(15, 23, 42, 0.45)");
-      gradient.addColorStop(1, "rgba(8, 47, 73, 0.35)");
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-
-      for (let i = 0; i < nodes.length; i += 1) {
-        const a = nodes[i];
-        a.x += a.vx;
-        a.y += a.vy;
-
-        if (a.x <= 0 || a.x >= width) a.vx *= -1;
-        if (a.y <= 0 || a.y >= height) a.vy *= -1;
-
-        for (let j = i + 1; j < nodes.length; j += 1) {
-          const b = nodes[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const dist = Math.hypot(dx, dy);
-          if (dist < 130) {
-            const alpha = 0.15 * (1 - dist / 130);
-            ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
+      reset(init = false) {
+        this.x = Math.random() * this.W;
+        this.y = init ? Math.random() * this.H : -20;
+        this.speed = 0.4 + Math.random() * 0.8;
+        this.char = Math.random() > 0.5 ? "1" : "0";
+        this.size = 9 + Math.random() * 5;
+        this.opacity = 0.12 + Math.random() * 0.5;
+        this.color = Math.random() > 0.7
+          ? `rgba(0,255,180,${this.opacity})`
+          : Math.random() > 0.5
+            ? `rgba(0,200,255,${this.opacity})`
+            : `rgba(80,120,255,${this.opacity})`;
+        if (Math.random() > 0.85) {
+          const w = WORDS[Math.floor(Math.random() * WORDS.length)];
+          this.char = w[Math.floor(Math.random() * w.length)];
+          this.opacity = 0.5 + Math.random() * 0.4;
+          this.color = `rgba(0,255,180,${this.opacity})`;
+          this.size = 11 + Math.random() * 4;
         }
       }
+      update() {
+        this.y += this.speed;
+        if (this.y > this.H + 20) this.reset();
+      }
+      draw(ctx) {
+        ctx.font = `${this.size}px 'Courier New', monospace`;
+        ctx.fillStyle = this.color;
+        ctx.fillText(this.char, this.x, this.y);
+      }
+    }
 
-      for (const n of nodes) {
+    class BinaryStream {
+      constructor(W, H) {
+        this.W = W; this.H = H;
+        this.x = Math.floor(Math.random() * (W / 14)) * 14;
+        this.y = Math.random() * H;
+        this.streamIdx = Math.floor(Math.random() * BINARY_STREAMS.length);
+        this.charIdx = 0;
+        this.speed = 0.6 + Math.random() * 1.2;
+        this.chars = BINARY_STREAMS[this.streamIdx].split("");
+        this.opacity = 0.18 + Math.random() * 0.35;
+        this.charSize = 11;
+        this.trail = [];
+        this.maxTrail = 18 + Math.floor(Math.random() * 12);
+      }
+      update() {
+        this.y += this.speed;
+        this.charIdx = (this.charIdx + 1) % this.chars.length;
+        this.trail.unshift({ char: this.chars[this.charIdx], y: this.y });
+        if (this.trail.length > this.maxTrail) this.trail.pop();
+        if (this.y > this.H + 200) {
+          this.y = -20;
+          this.x = Math.floor(Math.random() * (this.W / 14)) * 14;
+          this.streamIdx = Math.floor(Math.random() * BINARY_STREAMS.length);
+          this.chars = BINARY_STREAMS[this.streamIdx].split("");
+          this.trail = [];
+        }
+      }
+      draw(ctx) {
+        this.trail.forEach((t, i) => {
+          const fade = 1 - i / this.trail.length;
+          if (i === 0) {
+            ctx.font = `bold ${this.charSize}px 'Courier New', monospace`;
+            ctx.fillStyle = `rgba(200,255,230,${this.opacity * fade * 2.5})`;
+          } else {
+            ctx.font = `${this.charSize}px 'Courier New', monospace`;
+            ctx.fillStyle = `rgba(0,220,140,${this.opacity * fade * 0.8})`;
+          }
+          ctx.fillText(t.char, this.x, t.y);
+        });
+      }
+    }
+
+    class CircuitTrace {
+      constructor(W, H) {
+        this.W = W; this.H = H;
+        this.reset();
+      }
+      reset() {
+        const snap = (v) => Math.round(v / GRID) * GRID;
+        this.x1 = snap(Math.random() * this.W);
+        this.y1 = snap(Math.random() * this.H);
+        const horiz = Math.random() > 0.5;
+        const len = (2 + Math.floor(Math.random() * 6)) * GRID;
+        this.x2 = horiz ? this.x1 + len : this.x1;
+        this.y2 = horiz ? this.y1 : this.y1 + len;
+        this.progress = 0;
+        this.speed = 0.004 + Math.random() * 0.008;
+        this.opacity = 0.08 + Math.random() * 0.18;
+        this.color = Math.random() > 0.6
+          ? `rgba(0,220,140,`
+          : Math.random() > 0.5
+            ? `rgba(0,180,255,`
+            : `rgba(80,100,255,`;
+        this.done = false;
+        this.waitFrames = Math.floor(Math.random() * 120);
+        this.waited = 0;
+      }
+      update() {
+        if (this.waited < this.waitFrames) { this.waited++; return; }
+        this.progress = Math.min(1, this.progress + this.speed);
+        if (this.progress >= 1) {
+          this.done = true;
+          setTimeout(() => this.reset(), 2000 + Math.random() * 3000);
+        }
+      }
+      draw(ctx) {
+        if (this.waited < this.waitFrames) return;
+        const cx = this.x1 + (this.x2 - this.x1) * this.progress;
+        const cy = this.y1 + (this.y2 - this.y1) * this.progress;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(34, 211, 238, 0.8)";
+        ctx.moveTo(this.x1, this.y1);
+        ctx.lineTo(cx, cy);
+        ctx.strokeStyle = `${this.color}${this.opacity})`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(this.x1, this.y1, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `${this.color}${this.opacity * 1.8})`;
         ctx.fill();
+        if (this.progress >= 1) {
+          ctx.beginPath();
+          ctx.arc(this.x2, this.y2, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `${this.color}${this.opacity * 2})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    const drawChips = (W, H) => {
+      const chips = [
+        { x: 0.12, y: 0.15, w: 0.10, h: 0.06 },
+        { x: 0.70, y: 0.10, w: 0.14, h: 0.08 },
+        { x: 0.40, y: 0.60, w: 0.12, h: 0.07 },
+        { x: 0.08, y: 0.70, w: 0.09, h: 0.05 },
+        { x: 0.78, y: 0.65, w: 0.11, h: 0.06 },
+        { x: 0.55, y: 0.25, w: 0.08, h: 0.05 },
+      ];
+      chips.forEach(c => {
+        const x = c.x * W, y = c.y * H, w = c.w * W, h = c.h * H;
+        ctx.strokeStyle = "rgba(0,200,140,0.25)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, w, h);
+        ctx.fillStyle = "rgba(0,40,30,0.3)";
+        ctx.fillRect(x, y, w, h);
+        const pinCount = 4;
+        const pinLen = 10;
+        for (let i = 0; i < pinCount; i++) {
+          const px = x + (w / (pinCount + 1)) * (i + 1);
+          ctx.beginPath();
+          ctx.moveTo(px, y);
+          ctx.lineTo(px, y - pinLen);
+          ctx.strokeStyle = "rgba(0,200,140,0.2)";
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(px, y + h);
+          ctx.lineTo(px, y + h + pinLen);
+          ctx.stroke();
+        }
+        const glow = ctx.createRadialGradient(x+w/2, y+h/2, 2, x+w/2, y+h/2, w*0.8);
+        glow.addColorStop(0, "rgba(0,255,160,0.06)");
+        glow.addColorStop(1, "transparent");
+        ctx.fillStyle = glow;
+        ctx.fillRect(x - w*0.3, y - h*0.3, w*1.6, h*1.6);
+      });
+    };
+
+    let particles = [];
+    let streams = [];
+    let traces = [];
+
+    const init = (W, H) => {
+      particles = Array.from({ length: 120 }, () => new BitParticle(W, H));
+      streams   = Array.from({ length: 28  }, () => new BinaryStream(W, H));
+      traces    = Array.from({ length: 40  }, () => new CircuitTrace(W, H));
+    };
+
+    const animate = () => {
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      ctx.fillStyle = "#040810";
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.strokeStyle = "rgba(0,150,100,0.04)";
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x < W; x += GRID) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 0; y < H; y += GRID) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
       }
 
-      frameId = window.requestAnimationFrame(draw);
+      traces.forEach(t => { t.update(); t.draw(ctx); });
+      drawChips(W, H);
+      streams.forEach(s => { s.update(); s.draw(ctx); });
+      particles.forEach(p => { p.update(); p.draw(ctx); });
+
+      for (let y = 0; y < H; y += 3) {
+        ctx.fillStyle = "rgba(0,0,0,0.06)";
+        ctx.fillRect(0, y, W, 1);
+      }
+
+      const vig = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.9);
+      vig.addColorStop(0, "transparent");
+      vig.addColorStop(1, "rgba(2,6,14,0.82)");
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, W, H);
+
+      animationId = requestAnimationFrame(animate);
     };
 
     resize();
-    initNodes();
-    frameId = window.requestAnimationFrame(draw);
-    window.addEventListener("resize", resize);
+    init(canvas.width, canvas.height);
+    animate();
 
+    const handleResize = () => {
+      resize();
+      init(canvas.width, canvas.height);
+    };
+    window.addEventListener("resize", handleResize);
     return () => {
-      if (frameId) window.cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(animationId);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
-    <div className="chip-bg-wrap" aria-hidden="true">
-      <canvas ref={canvasRef} className="chip-bg-canvas" />
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 0,
+        display: "block",
+      }}
+    />
   );
 };
 
