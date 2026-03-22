@@ -1,12 +1,62 @@
 import { useEffect, useRef } from "react";
 
-const ChipBackground = () => {
+const THEMES = {
+  dark: {
+    background: "#040810",
+    grid: "rgba(0,150,100,0.04)",
+    scanline: "rgba(0,0,0,0.06)",
+    vignetteOuter: "rgba(2,6,14,0.82)",
+    particlePalette: [
+      (opacity) => `rgba(0,255,180,${opacity})`,
+      (opacity) => `rgba(0,200,255,${opacity})`,
+      (opacity) => `rgba(80,120,255,${opacity})`,
+    ],
+    accentParticle: (opacity) => `rgba(0,255,180,${opacity})`,
+    streamHead: (opacity) => `rgba(200,255,230,${opacity})`,
+    streamTrail: (opacity) => `rgba(0,220,140,${opacity})`,
+    tracePalette: [
+      "rgba(0,220,140,",
+      "rgba(0,180,255,",
+      "rgba(80,100,255,",
+    ],
+    chipStroke: "rgba(0,200,140,0.25)",
+    chipFill: "rgba(0,40,30,0.3)",
+    chipPin: "rgba(0,200,140,0.2)",
+    glowInner: "rgba(0,255,160,0.06)",
+  },
+  light: {
+    background: "#ffffff",
+    grid: "rgba(37,99,235,0.08)",
+    scanline: "rgba(148,163,184,0.08)",
+    vignetteOuter: "rgba(191,219,254,0.38)",
+    particlePalette: [
+      (opacity) => `rgba(37,99,235,${opacity})`,
+      (opacity) => `rgba(14,116,144,${opacity})`,
+      (opacity) => `rgba(59,130,246,${opacity})`,
+    ],
+    accentParticle: (opacity) => `rgba(30,64,175,${opacity})`,
+    streamHead: (opacity) => `rgba(29,78,216,${opacity})`,
+    streamTrail: (opacity) => `rgba(14,116,144,${opacity})`,
+    tracePalette: [
+      "rgba(37,99,235,",
+      "rgba(14,116,144,",
+      "rgba(96,165,250,",
+    ],
+    chipStroke: "rgba(37,99,235,0.26)",
+    chipFill: "rgba(219,234,254,0.45)",
+    chipPin: "rgba(14,116,144,0.24)",
+    glowInner: "rgba(96,165,250,0.12)",
+  },
+};
+
+const ChipBackground = ({ theme = "dark" }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     let animationId;
+    const palette = THEMES[theme] ?? THEMES.dark;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -40,16 +90,16 @@ const ChipBackground = () => {
         this.char = Math.random() > 0.5 ? "1" : "0";
         this.size = 9 + Math.random() * 5;
         this.opacity = 0.12 + Math.random() * 0.5;
-        this.color = Math.random() > 0.7
-          ? `rgba(0,255,180,${this.opacity})`
-          : Math.random() > 0.5
-            ? `rgba(0,200,255,${this.opacity})`
-            : `rgba(80,120,255,${this.opacity})`;
+        const particleTone =
+          palette.particlePalette[
+            Math.floor(Math.random() * palette.particlePalette.length)
+          ];
+        this.color = particleTone(this.opacity);
         if (Math.random() > 0.85) {
           const w = WORDS[Math.floor(Math.random() * WORDS.length)];
           this.char = w[Math.floor(Math.random() * w.length)];
           this.opacity = 0.5 + Math.random() * 0.4;
-          this.color = `rgba(0,255,180,${this.opacity})`;
+          this.color = palette.accentParticle(this.opacity);
           this.size = 11 + Math.random() * 4;
         }
       }
@@ -96,10 +146,10 @@ const ChipBackground = () => {
           const fade = 1 - i / this.trail.length;
           if (i === 0) {
             ctx.font = `bold ${this.charSize}px 'Courier New', monospace`;
-            ctx.fillStyle = `rgba(200,255,230,${this.opacity * fade * 2.5})`;
+            ctx.fillStyle = palette.streamHead(this.opacity * fade * 2.5);
           } else {
             ctx.font = `${this.charSize}px 'Courier New', monospace`;
-            ctx.fillStyle = `rgba(0,220,140,${this.opacity * fade * 0.8})`;
+            ctx.fillStyle = palette.streamTrail(this.opacity * fade * 0.8);
           }
           ctx.fillText(t.char, this.x, t.y);
         });
@@ -122,11 +172,10 @@ const ChipBackground = () => {
         this.progress = 0;
         this.speed = 0.004 + Math.random() * 0.008;
         this.opacity = 0.08 + Math.random() * 0.18;
-        this.color = Math.random() > 0.6
-          ? `rgba(0,220,140,`
-          : Math.random() > 0.5
-            ? `rgba(0,180,255,`
-            : `rgba(80,100,255,`;
+        this.color =
+          palette.tracePalette[
+            Math.floor(Math.random() * palette.tracePalette.length)
+          ];
         this.done = false;
         this.waitFrames = Math.floor(Math.random() * 120);
         this.waited = 0;
@@ -173,10 +222,10 @@ const ChipBackground = () => {
       ];
       chips.forEach(c => {
         const x = c.x * W, y = c.y * H, w = c.w * W, h = c.h * H;
-        ctx.strokeStyle = "rgba(0,200,140,0.25)";
+        ctx.strokeStyle = palette.chipStroke;
         ctx.lineWidth = 1;
         ctx.strokeRect(x, y, w, h);
-        ctx.fillStyle = "rgba(0,40,30,0.3)";
+        ctx.fillStyle = palette.chipFill;
         ctx.fillRect(x, y, w, h);
         const pinCount = 4;
         const pinLen = 10;
@@ -185,7 +234,7 @@ const ChipBackground = () => {
           ctx.beginPath();
           ctx.moveTo(px, y);
           ctx.lineTo(px, y - pinLen);
-          ctx.strokeStyle = "rgba(0,200,140,0.2)";
+          ctx.strokeStyle = palette.chipPin;
           ctx.stroke();
           ctx.beginPath();
           ctx.moveTo(px, y + h);
@@ -193,7 +242,7 @@ const ChipBackground = () => {
           ctx.stroke();
         }
         const glow = ctx.createRadialGradient(x+w/2, y+h/2, 2, x+w/2, y+h/2, w*0.8);
-        glow.addColorStop(0, "rgba(0,255,160,0.06)");
+        glow.addColorStop(0, palette.glowInner);
         glow.addColorStop(1, "transparent");
         ctx.fillStyle = glow;
         ctx.fillRect(x - w*0.3, y - h*0.3, w*1.6, h*1.6);
@@ -214,10 +263,10 @@ const ChipBackground = () => {
       const W = canvas.width, H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
-      ctx.fillStyle = "#040810";
+      ctx.fillStyle = palette.background;
       ctx.fillRect(0, 0, W, H);
 
-      ctx.strokeStyle = "rgba(0,150,100,0.04)";
+      ctx.strokeStyle = palette.grid;
       ctx.lineWidth = 0.5;
       for (let x = 0; x < W; x += GRID) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
@@ -232,13 +281,13 @@ const ChipBackground = () => {
       particles.forEach(p => { p.update(); p.draw(ctx); });
 
       for (let y = 0; y < H; y += 3) {
-        ctx.fillStyle = "rgba(0,0,0,0.06)";
+        ctx.fillStyle = palette.scanline;
         ctx.fillRect(0, y, W, 1);
       }
 
       const vig = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.9);
       vig.addColorStop(0, "transparent");
-      vig.addColorStop(1, "rgba(2,6,14,0.82)");
+      vig.addColorStop(1, palette.vignetteOuter);
       ctx.fillStyle = vig;
       ctx.fillRect(0, 0, W, H);
 
@@ -258,7 +307,7 @@ const ChipBackground = () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [theme]);
 
   return (
     <canvas

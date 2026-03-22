@@ -65,7 +65,7 @@ body {
 }
 
 :root[data-theme="light"] .chip-bg-wrap {
-  opacity: 0;
+  opacity: 1;
 }
 
 :root[data-theme="light"] [class*="bg-slate-9"] {

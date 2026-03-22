@@ -44,7 +44,7 @@ function App() {
   return (
     <BrowserRouter>
       <div style={{ position: "relative", minHeight: "100vh", overflowX: "hidden" }}>
-        <ChipBackground />
+        <ChipBackground theme={theme} />
         <div style={{ position: "relative", zIndex: 1 }} className="text-slate-100">
           <Navbar theme={theme} onToggleTheme={toggleTheme} />
           <main className="pt-20 md:pt-24">
