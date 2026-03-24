@@ -183,7 +183,7 @@ export const projects = [
     description:
       "Dynamic contact tracing and breach detection system with BFS path tracing, encrypted logs, IoT simulation, and animated network visualization.",
     tech: ["Java", "BFS Algorithm", "AES-256", "Graph Theory", "IoT Simulation", "JavaFX"],
-    github: "https://github.com/Meghana0306/CyberTrace",
+    github: "https://github.com/Meghana0306/Dynamic-contact-tracing-app-using-graphs",
     image: "https://i.postimg.cc/QMWvXJdH/Screenshot-2026-03-10-225247.png",
     details: {
       metaLine: "Java | IoT | security | graph tracing",
