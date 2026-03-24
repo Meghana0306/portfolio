@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Element } from "react-scroll";
-import { FaGithub } from "react-icons/fa";
+import { FaExternalLinkAlt, FaGithub } from "react-icons/fa";
 import { projects } from "../data/projects";
 
 const methodStyles = {
@@ -341,6 +341,17 @@ const ProjectModal = ({ project, onClose }) => {
                     <FaGithub />
                     View GitHub
                   </a>
+                  {project.live && (
+                    <a
+                      href={project.live}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-xl border border-brand-500/40 px-4 py-3 text-sm font-semibold text-brand-200 transition hover:bg-brand-500/10"
+                    >
+                      <FaExternalLinkAlt />
+                      Live Demo
+                    </a>
+                  )}
                 </div>
               </section>
             </div>
@@ -405,6 +416,17 @@ const Projects = () => {
                       <FaGithub />
                       GitHub
                     </a>
+                    {project.live && (
+                      <a
+                        href={project.live}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-brand-400 hover:text-white"
+                      >
+                        <FaExternalLinkAlt />
+                        Live Demo
+                      </a>
+                    )}
                   </div>
                 </div>
               </motion.article>

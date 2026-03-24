@@ -5,6 +5,7 @@ export const projects = [
       "Quantum-inspired customer segmentation using manual scaling, sin/cos feature encoding, and a custom NumPy KMeans pipeline deployed in Streamlit.",
     tech: ["Python", "NumPy", "Streamlit", "Seaborn", "No sklearn"],
     github: "https://github.com/Meghana0306/Quantum_Neural_Networks",
+    live: "https://quantumneuralnetworks-bvusqzdt5rrywcjfy9nbsa.streamlit.app/",
     image: "https://i.postimg.cc/Nf9sB95r/Screenshot-2026-03-11-112427.png",
     details: {
       tagline: "Quantum-inspired ML built from scratch with NumPy and Streamlit.",
