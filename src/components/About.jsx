@@ -1,30 +1,40 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Element } from "react-scroll";
 
-const infoCards = [
-  {
-    label: "Education",
-    line1: "B.Tech CSE (AI & ML)",
-    // line2: "LPU | CGPA: 7.47",
-  },
-  {
-    label: "Location",
-    line1: "Punjab, India",
-    line2: "Open to opportunities",
-  },
-  {
-    label: "Email",
-    line1: "meghana7182@gmail.com",
-    // line2: "Available for Internships and Full-time roles",
-  },
-  {
-    label: "Profiles",
-    line1: "GitHub | LinkedIn",
-    line2: "LeetCode | HackerRank",
-  },
+const codeLines = [
+  "const meghana = {",
+  "  role: 'AI & ML Engineer',",
+  "  education: 'B.Tech CSE (AI & ML)',",
+  "  location: 'Punjab, India',",
+  "  email: 'meghana7182@gmail.com',",
+  "  skills: ['Python', 'C++', 'Machine Learning', 'Full Stack'],",
+  "  profiles: ['GitHub', 'LinkedIn', 'LeetCode', 'HackerRank'],",
+  "  problemsSolved: '150+',",
+  "  certificates: 6,",
+  "  focus: 'Building intelligent, scalable, real-world solutions'",
+  "};",
 ];
 
+const typingText = codeLines.join("\n");
+
 const About = () => {
+  const [typedCount, setTypedCount] = useState(0);
+
+  useEffect(() => {
+    let timeoutId;
+
+    if (typedCount < typingText.length) {
+      timeoutId = setTimeout(() => {
+        setTypedCount((count) => count + 1);
+      }, 28);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [typedCount]);
+
+  const visibleText = typingText.slice(0, typedCount);
+
   return (
     <Element name="about">
       <section className="relative overflow-hidden px-6 py-24">
@@ -76,28 +86,38 @@ const About = () => {
             </motion.div>
           </div>
 
-          <div className="grid auto-rows-max content-start self-start gap-4 sm:grid-cols-2">
-            {infoCards.map((card, index) => (
-              <motion.article
-                key={card.label}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 + index * 0.08 }}
-                whileHover={{ y: -6 }}
-                className="rounded-2xl border border-slate-700/60 bg-slate-900/70 p-4 backdrop-blur-lg"
-              >
-                <div className="mb-3 flex gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
-                </div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-400">{card.label}</p>
-                <p className="mt-3 text-base font-semibold leading-6 text-white md:text-lg">{card.line1}</p>
-                <p className="mt-1 text-base font-semibold leading-6 text-slate-200 md:text-lg">{card.line2}</p>
-              </motion.article>
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.18 }}
+            whileHover={{ y: -6 }}
+            className="self-start rounded-3xl border border-slate-700/60 bg-slate-900/80 p-5 backdrop-blur-lg"
+          >
+            <div className="mb-4 flex gap-2">
+              <span className="h-3 w-3 rounded-full bg-red-400" />
+              <span className="h-3 w-3 rounded-full bg-yellow-400" />
+              <span className="h-3 w-3 rounded-full bg-green-400" />
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <p className="font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-brand-400">
+                  about-me.js
+                </p>
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500">
+                  live profile
+                </p>
+              </div>
+
+              <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-[13px] leading-7 text-slate-200">
+                <code>
+                  {visibleText}
+                  <span className="ml-1 inline-block h-5 w-[2px] animate-pulse bg-brand-400 align-middle" />
+                </code>
+              </pre>
+            </div>
+          </motion.div>
         </div>
       </section>
     </Element>
